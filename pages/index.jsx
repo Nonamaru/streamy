@@ -7,7 +7,11 @@ export default function Componet() {
     <View style={styles.web}>
       <View style={styles.viewContainer}>
         <View style={styles.header}>
-          Header
+          <View style={styles.headerContent}>
+            <View>Upload</View>
+            <View>Folder name</View>
+            <View>User</View>
+          </View>
         </View>
         <View style={styles.content}>
           Content
@@ -36,7 +40,21 @@ const styles = StyleSheet.create({
   header: {
     border: '1px solid black',
     width: '100%',
+    height: '120px',
   },
+  headerContent: {
+    border: '1px solid black',
+    width: '1200px',
+    height: '100%',
+    marginRight: 'auto',
+    marginLeft: 'auto',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'row',
+    // flex: 1,
+    fontSize:'45px',
+  },  
   content: {
     border: '1px solid black',
     width: '1200px',
