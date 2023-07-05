@@ -3,7 +3,8 @@ import { Icon } from '@iconify/react';
 import { TextInput } from 'react-native-web';
 
 const width = Dimensions.get('window').width;
-let searchValue;
+// let searchValue;
+const [searchValue, setSearchValue] = useState('')
 
 export default function Componet() {
   return (
@@ -16,8 +17,8 @@ export default function Componet() {
               <Icon icon="icon-park-solid:upload-three" />
               <View style={headerStyles.search}>
                 <Icon icon="material-symbols:search" />
-                <TextInput value={searchValue} />
-                {searchValue}
+                <TextInput onChangeText={(value)=> setSearchValue(value)} value={searchValue} />
+                <Text>{searchValue}</Text>
               </View>
             </View>
             <View>Folder name</View>
