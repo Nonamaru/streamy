@@ -1,23 +1,104 @@
-import { Dimensions, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, useWindowDimensions } from 'react-native';
 import { Icon } from '@iconify/react';
 import Card from '../components/card.jsx';
+import RightDoor from '../components/rightDoor.jsx';
+import LeftDoor from '../components/leftDoor.jsx';
+import { useState } from 'react';
 
-// const width = Dimensions.get('window').width;
-// const {width, height} = useWindowDimensions();
+const {width, height} = Dimensions.get('window');
 export default function Componet() {
+  const header = {
+    
+  }
+  const [hovered, setHovered] = useState({
+    upload: false, 
+    search: false,
+    user: false
+  });
+  const [door, setDoor] = useState({
+    left: false, 
+    right: false,
+  });
+
   return (
     <View style={styles.web}>
+      <LeftDoor visible={door.left} />
+      <RightDoor visible={door.right} />
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setDoor((door) => ({
+            ...door,
+            right: false,
+            left: false,
+          }))
+        }}
+      >
+        <View style={[doors.shadow, (!door.right && !door.left) && {display: 'none'}]}></View>
+      </TouchableWithoutFeedback>
       <View style={styles.viewContainer}>
         <View style={headerStyles.header}>
           <View style={headerStyles.headerContent}>
-            <View style={headerStyles.upload}>
-              <Icon icon="icon-park-solid:upload-three" />
-              <View style={headerStyles.search}>
+            <View style={headerStyles.upload_search}>
+              <TouchableOpacity
+                onPress={() => {
+                  setDoor((door) => ({
+                    ...door,
+                    left: true,
+                  }))
+                }}
+              >
+                <View
+                  style={[headerStyles.upload, hovered.upload && {color: 'gray'}]}
+                  onMouseEnter={() => setHovered((hovered) => ({
+                    ...hovered,
+                    upload: true,
+                  }))}
+                  onMouseLeave={() => setHovered((hovered) => ({
+                    ...hovered,
+                    upload: false,
+                  }))}
+                >
+                  <Icon icon="ri:video-upload-fill" />
+                </View>
+              </TouchableOpacity>
+              <View 
+                style={[headerStyles.search, hovered.search && {color: 'gray'}]}
+                onMouseEnter={() => setHovered((hovered) => ({
+                  ...hovered,
+                  search: true,
+                }))}
+                onMouseLeave={()=> setHovered((hovered) => ({
+                  ...hovered, 
+                  search: false,
+                }))}
+              >
                 <Icon icon="material-symbols:search" />
               </View>
             </View>
-            <View>Folder name</View>
-            <View style={headerStyles.userProfile}></View>
+            <View>
+              <Text style={headerStyles.foldername}>Folder name</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setDoor((door) => ({
+                  ...door,
+                  right: true,
+                }))
+              }}
+            >
+              <View 
+                style={[headerStyles.userProfile, hovered.user && {backgroundColor: 'gray'}]}
+                onMouseEnter={() => setHovered((hovered) => ({
+                  ...hovered,
+                  user: true,
+                }))}
+                onMouseLeave={()=> setHovered((hovered) => ({
+                  ...hovered, 
+                  user: false,
+                }))}
+                
+              ></View>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.content}>
@@ -36,8 +117,8 @@ export default function Componet() {
 const styles = StyleSheet.create({
   web: {
     // flex: 1,
-    width: '100vw',
-    height: '100vh',
+    width: width,
+    height: height,
   },
   viewContainer: {
     // border: width <= 1800 ? '1px solid black' : '2px solid red',
@@ -73,14 +154,37 @@ const headerStyles = StyleSheet.create({
     // flex: 1,
     fontSize:'45px',
   },
-  upload: {
+  upload_search: {
     display: 'flex',
     flexDirection: 'row',
-  },  
+  },
+  upload: {
+    cursor: 'pointer'
+  },
+  search: {
+    cursor: 'pointer',
+  },
+  foldername: {
+    fontSize: '45px',
+    fontStyle: 'normal',
+    fontWeight: '400',
+  },
   userProfile: {
     width: '50px',
     height: '50px',
     backgroundColor: 'blue',
     borderRadius: '18px',
+    cursor: 'pointer',
   }
 });
+
+const doors = StyleSheet.create({
+  shadow: {
+    position: 'fixed',
+    zIndex: 9,
+    width: width,
+    height: height,
+    backgroundColor: 'rgba(159, 159, 159, 0.20)',
+    backdropFilter: 'blur(3px)',
+  }
+})
