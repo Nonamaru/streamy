@@ -3,10 +3,10 @@ import { Icon } from '@iconify/react';
 import { useState } from 'react';
 
 const getStyle = (isActive) => {
-    return isActive ? { color: 'gray' } : { color: 'black' };
+    return isActive ? { color: 'gray', cursor: 'pointer' } : { color: 'black' };
 };
 const getStyleDelete = (isActive) => {
-    return isActive ? { color: 'darkred' } : { color: 'red' };
+    return isActive ? { color: 'darkred', cursor: 'pointer' } : { color: 'red' };
 };
 
 
@@ -71,7 +71,7 @@ export default function Card() {
                     <Image 
                         style={styles.img} 
                         source={{
-                            uri: 'https://p4.wallpaperbetter.com/wallpaper/418/131/757/anime-picture-in-picture-anime-girls-himiko-toga-wallpaper-preview.jpg',
+                            uri: 'https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg',
                         }} 
                     />
                 </View>
@@ -140,17 +140,29 @@ export default function Card() {
                         placeholder="card name"
                         // keyboardType="numeric"
                     />
-                    <TouchableWithoutFeedback>
-                        <Icon style={{width: '20px', height: '20px'}} icon="ic:round-send" />
-                    </TouchableWithoutFeedback>
-                    
-                    <TouchableWithoutFeedback
-                        onPress={() => {
-                            showSettings('edit', false)
-                        }}
+                    <View
+                        style={getStyle(hset.send)}
+                        onMouseEnter={() => setHset((hset) => ({...hset, send: true}))}
+                        onMouseLeave={() => setHset((hset) => ({...hset, send: false}))}
                     >
-                        <Icon style={{width: '24px', height: '24px'}} icon="ic:round-close" />
-                    </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback>
+                            <Icon style={{width: '20px', height: '20px'}} icon="ic:round-send" />
+                        </TouchableWithoutFeedback>
+                    </View>
+                    
+                    <View
+                        style={getStyle(hset.closeIcon)}
+                        onMouseEnter={() => setHset((hset) => ({...hset, closeIcon: true}))}
+                        onMouseLeave={() => setHset((hset) => ({...hset, closeIcon: false}))}
+                    >
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                showSettings('edit', false)
+                            }}
+                        >
+                            <Icon style={{width: '24px', height: '24px'}} icon="ic:round-close" />
+                        </TouchableWithoutFeedback>
+                    </View>
                 </View>
 
                 {/* ПОЛЕ ДЛЯ УДАЛЕНИЯ */}
@@ -168,14 +180,19 @@ export default function Card() {
                         </TouchableWithoutFeedback>
                     </View>
 
-                    <TouchableWithoutFeedback
-                        onPress={() => {
-                            showSettings('delete', false)
-                        }}
+                    <View
+                        style={getStyle(hset.closeIcon)}
+                        onMouseEnter={() => setHset((hset) => ({...hset, closeIcon: true}))}
+                        onMouseLeave={() => setHset((hset) => ({...hset, closeIcon: false}))}
                     >
-                        <Icon style={{width: '28px', height: '28px'}} icon="ic:round-close" />
-
-                    </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                showSettings('delete', false)
+                            }}
+                        >
+                            <Icon style={{width: '28px', height: '28px'}} icon="ic:round-close" />
+                        </TouchableWithoutFeedback>
+                    </View>
                 </View>
                 
             </View>
@@ -217,7 +234,7 @@ const styles = StyleSheet.create({
         backgroundRepeat: 'no-repeat',
         borderRadius: 'inherit',
         filter: 'blur(25px)',
-        backgroundImage: "url('https://p4.wallpaperbetter.com/wallpaper/418/131/757/anime-picture-in-picture-anime-girls-himiko-toga-wallpaper-preview.jpg')",
+        backgroundImage: "url('https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg')",
     },
     img: {
         position: 'relative',
@@ -293,7 +310,8 @@ const setting = StyleSheet.create({
         height: '23px',
         backgroundColor: 'white',
         borderRadius: '6px',
-        padding: '5px'
+        padding: '5px',
+        color: 'gray'
     },
     delete: {
         width: '60px',

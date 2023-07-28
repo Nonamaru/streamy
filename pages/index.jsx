@@ -49,28 +49,16 @@ export default function Componet() {
               >
                 <View
                   style={[headerStyles.upload, hovered.upload && {color: 'gray'}]}
-                  onMouseEnter={() => setHovered((hovered) => ({
-                    ...hovered,
-                    upload: true,
-                  }))}
-                  onMouseLeave={() => setHovered((hovered) => ({
-                    ...hovered,
-                    upload: false,
-                  }))}
+                  onMouseEnter={() => setHovered((hovered) => ({...hovered, upload: true}))}
+                  onMouseLeave={() => setHovered((hovered) => ({...hovered, upload: false}))}
                 >
                   <Icon icon="ri:video-upload-fill" />
                 </View>
               </TouchableOpacity>
               <View 
                 style={[headerStyles.search, hovered.search && {color: 'gray'}]}
-                onMouseEnter={() => setHovered((hovered) => ({
-                  ...hovered,
-                  search: true,
-                }))}
-                onMouseLeave={()=> setHovered((hovered) => ({
-                  ...hovered, 
-                  search: false,
-                }))}
+                onMouseEnter={() => setHovered((hovered) => ({...hovered, search: true}))}
+                onMouseLeave={()=> setHovered((hovered) => ({...hovered,  search: false}))}
               >
                 <Icon icon="material-symbols:search" />
               </View>
