@@ -1,15 +1,13 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, useWindowDimensions } from 'react-native';
 import { Icon } from '@iconify/react';
+import { useState } from 'react';
 import Card from '../components/card.jsx';
 import RightDoor from '../components/rightDoor.jsx';
 import LeftDoor from '../components/leftDoor.jsx';
-import { useState } from 'react';
+import Opened from '../components/openedCard.jsx';
 
 const {width, height} = Dimensions.get('window');
 export default function Componet() {
-  const header = {
-    
-  }
   const [hovered, setHovered] = useState({
     upload: false, 
     search: false,
@@ -20,18 +18,17 @@ export default function Componet() {
     right: false,
   });
 
+  const [isOpened, setIsOpened] = useState(false)
+  
+
   return (
     <View style={styles.web}>
+      <Opened isOpened={isOpened}/>
       <LeftDoor visible={door.left} />
       <RightDoor visible={door.right} />
+      <View style={openCard.background}></View>
       <TouchableWithoutFeedback
-        onPress={() => {
-          setDoor((door) => ({
-            ...door,
-            right: false,
-            left: false,
-          }))
-        }}
+        onPress={() => {setDoor((door) => ({...door, right: false, left: false}))}}
       >
         <View style={[doors.shadow, (!door.right && !door.left) && {display: 'none'}]}></View>
       </TouchableWithoutFeedback>
@@ -67,12 +64,7 @@ export default function Componet() {
               <Text style={headerStyles.foldername}>Folder name</Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                setDoor((door) => ({
-                  ...door,
-                  right: true,
-                }))
-              }}
+              onPress={() => {setDoor((door) => ({...door, right: true}))}}
             >
               <View 
                 style={[headerStyles.userProfile, hovered.user && {backgroundColor: 'gray'}]}
@@ -89,14 +81,17 @@ export default function Componet() {
             </TouchableOpacity>
           </View>
         </View>
+        
+        {/* КАРТОЧКИ */}
         <View style={styles.content}>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          <Card setOpened={setIsOpened} />
+          <Card setOpened={setIsOpened} />
+          <Card setOpened={setIsOpened} />
+          <Card setOpened={setIsOpened} />
+          <Card setOpened={setIsOpened} />
+          <Card setOpened={setIsOpened} />
         </View>
+
       </View>
     </View>
   );
@@ -174,5 +169,17 @@ const doors = StyleSheet.create({
     height: height,
     backgroundColor: 'rgba(159, 159, 159, 0.20)',
     backdropFilter: 'blur(3px)',
+  }
+})
+
+const openCard = StyleSheet.create({
+  background:{
+    width: width,
+    height: height,
+    backgroundColor: '#DBDBDB',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    zIndex: 9,
   }
 })

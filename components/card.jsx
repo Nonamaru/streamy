@@ -1,6 +1,7 @@
 import { TextInput, Image, StyleSheet, TouchableWithoutFeedback, Text, View } from 'react-native';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
+import { TouchableOpacity } from 'react-native-web';
 
 const getStyle = (isActive) => {
     return isActive ? { color: 'gray', cursor: 'pointer' } : { color: 'black' };
@@ -8,11 +9,17 @@ const getStyle = (isActive) => {
 const getStyleDelete = (isActive) => {
     return isActive ? { color: 'darkred', cursor: 'pointer' } : { color: 'red' };
 };
+const getStyleImg = (isActive) => {
+    return isActive ? { filter: 'blur(30px)' } : { filter: 'blur(25px)' }
+}
 
 
-
-export default function Card() {
+export default function Card({setOpened}) {
     const [hovered, setHovered] = useState(false);
+    const [imgHovered, setImgHovered] = useState({
+        hover: false,
+        card: false,
+    });
     const [hset, setHset] = useState({
         edit: false,
         trash: false,
@@ -66,15 +73,24 @@ export default function Card() {
     return (
         <View style={styles.mainCard}>
             <View style={styles.topCard}>
-                <View style={styles.cardView}>
-                    <View style={styles.imageShadow}></View>
-                    <Image 
-                        style={styles.img} 
-                        source={{
-                            uri: 'https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg',
-                        }} 
-                    />
-                </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        // setImgHovered((imgHovered) => ({...imgHovered, card: true}))
+                        setOpened(true)
+                    }}
+                >
+                    <View style={styles.cardView}>
+                        <View style={[styles.imageShadow, getStyleImg(imgHovered.hover)]}></View>
+                            <Image 
+                                style={styles.img} 
+                                onMouseEnter = {() => setImgHovered((imgHovered) => ({...imgHovered, hover: true}))}
+                                onMouseLeave = {() => setImgHovered((imgHovered) => ({...imgHovered, hover: false}))}
+                                source={{
+                                    uri: 'https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg',
+                                }}
+                            />
+                    </View>
+                </TouchableOpacity>
             </View>
             <View style={styles.bottomCard}>
                 <View style={styles.userInfo}>
@@ -241,6 +257,7 @@ const styles = StyleSheet.create({
         width: 'auto',
         width: '100%',
         height: '100%',
+        cursor: 'pointer'
     },
 
     bottomCard: {
