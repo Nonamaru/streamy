@@ -74,10 +74,7 @@ export default function Card({setOpened}) {
         <View style={styles.mainCard}>
             <View style={styles.topCard}>
                 <TouchableOpacity
-                    onPress={() => {
-                        // setImgHovered((imgHovered) => ({...imgHovered, card: true}))
-                        setOpened(true)
-                    }}
+                    onPress={() => {setOpened(true)}}
                 >
                     <View style={styles.cardView}>
                         <View style={[styles.imageShadow, getStyleImg(imgHovered.hover)]}></View>
