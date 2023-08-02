@@ -13,8 +13,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Group>
-            <Stack.Screen name="Home" component={Componet} />
             <Stack.Screen name="Auth" component={Auth} />
+            <Stack.Screen name="Home" component={Componet} />
           </Stack.Group>
         </Stack.Navigator>
       </NavigationContainer>

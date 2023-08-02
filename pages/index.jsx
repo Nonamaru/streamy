@@ -5,7 +5,6 @@ import Card from '../components/card.jsx';
 import RightDoor from '../components/rightDoor.jsx';
 import LeftDoor from '../components/leftDoor.jsx';
 import Opened from '../components/openedCard.jsx';
-import {useNavigation} from '@react-navigation/native'
 
 const {width, height} = Dimensions.get('window');
 export default function Componet() {
@@ -20,16 +19,13 @@ export default function Componet() {
   });
 
   const [isOpened, setIsOpened] = useState(false)
-  const navigation = useNavigation();
 
   return (
     <View style={styles.web}>
       <Opened isOpened={isOpened} setOpened={setIsOpened}/>
       <LeftDoor visible={door.left} />
-      <RightDoor visible={door.right} />
+      <RightDoor visible={door.right} doorVisible={setDoor} />
       <View style={[openCard.background, !isOpened && {display: 'none'}]}></View>
-      
-      <Button onPress={() => navigation.push('Auth')} />
 
       <TouchableWithoutFeedback
         onPress={() => {setDoor((door) => ({...door, right: false, left: false}))}}
@@ -41,8 +37,7 @@ export default function Componet() {
           <View style={headerStyles.headerContent}>
             <View style={headerStyles.upload_search}>
               <TouchableOpacity
-                onPress={() => {
-                  setDoor((door) => ({...door, left: true}))}}
+                onPress={() => {setDoor((door) => ({...door, left: true}))}}
               >
                 <View
                   style={[headerStyles.upload, hovered.upload && {color: 'gray'}]}

@@ -2,10 +2,13 @@ import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native-web';
+import {useNavigation} from '@react-navigation/native'
 
 const getBackgroundStyle = (isActive) => {return isActive ? {backgroundColor: 'darkgray'} : {backgroundColor: '#D9D9D9'}}
 
-export default function RightDoor({visible}) {
+export default function RightDoor({visible, doorVisible}) {
+    const navigation = useNavigation();
+
     const [hoverElem, sethoverElem] = useState(false);
     return (
         <View style={[door.main, !visible && {display: 'none'}]}>
@@ -19,7 +22,13 @@ export default function RightDoor({visible}) {
                 </View>
 
                 {/* ВЫХОД */}
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                            navigation.push('Auth');
+                            doorVisible(false)
+                        }
+                    }
+                >
                     <View 
                         style={[door.leave, getBackgroundStyle(hoverElem)]}
                         onMouseEnter={() => sethoverElem(true)}
