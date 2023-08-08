@@ -24,6 +24,7 @@ export default function RightDoor({visible, doorVisible}) {
                 {/* ВЫХОД */}
                 <TouchableOpacity
                     onPress={() => {
+                            localStorage.clear();
                             navigation.push('Auth');
                             doorVisible(false)
                         }
