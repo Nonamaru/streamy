@@ -23,7 +23,18 @@ export default function RightDoor({visible, doorVisible, userName, updateFolder}
                 },
             });
             const folder_json = await response.json();
-            setFolders(folder_json.libraries);
+            
+            let started_arr = [];
+            for (let value of folder_json.libraries) {started_arr.push(value.folder)};
+            let sorted_arr = [];
+            started_arr.forEach((item) => {
+                if (!sorted_arr.includes(item)) {
+                    sorted_arr.push(item);
+                }
+            });
+            
+            setFolders(sorted_arr);
+            // setFolders(folder_json.libraries);
         } catch (error) {
             console.error(error);
         }
@@ -64,13 +75,13 @@ export default function RightDoor({visible, doorVisible, userName, updateFolder}
             {folders.map((f) => (
                 <TouchableOpacity
                     onPress={() => {
-                        localStorage.setItem('folder', `${f.folder}`);
-                        updateFolder(`${f.folder}`);
+                        localStorage.setItem('folder', `${f}`);
+                        updateFolder(`${f}`);
                     }}
                 >
                     <View style={door.folders}>
                         <Icon style={{width: 40, height: 40, marginRight: 10}} icon="material-symbols:folder" />
-                        <Text style={door.folders.name}>{f.folder}</Text>
+                        <Text style={door.folders.name}>{f}</Text>
                     </View>
                 </TouchableOpacity>
             ))}
