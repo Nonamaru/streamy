@@ -42,6 +42,7 @@ export default function Auth(){
             console.log(json);
             localStorage.setItem('jwt', `${json.jwt}`);
             localStorage.setItem('username', `${json.user.username}`);
+            localStorage.setItem('folder', `main`);
             setErrors(false);
             setLogin(() => ({
                 ...login,

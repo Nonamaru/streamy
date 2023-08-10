@@ -1,31 +1,16 @@
 import { Button, Dimensions, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, useWindowDimensions } from 'react-native';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '../components/card.jsx';
 import RightDoor from '../components/rightDoor.jsx';
 import LeftDoor from '../components/leftDoor.jsx';
-import Opened from '../components/openedCard.jsx';
+// import Opened from '../components/openedCard.jsx';
 
 const {width, height} = Dimensions.get('window');
+const host = "http://localhost:1337";
 export default function Componet() {
 
-  const test = async () => {
-    let jwt = localStorage.getItem('jwt');
-    // console.log(jwt);
-    try {
-        const response = await fetch('http://localhost:1337/api/users/me?populate=*', {
-            headers: {
-              Authorization: `Bearer ${jwt}`
-            },
-        });
-        const json = await response.json();
-        // return json.movies;
-        console.log(json);
-    } catch (error) {
-        console.error(error);
-    }
-  };
-
+  const [info, setInfo] = useState({});
   const [hovered, setHovered] = useState({
     upload: false, 
     search: false,
@@ -35,15 +20,54 @@ export default function Componet() {
     left: false, 
     right: false,
   });
+  const [isOpened, setIsOpened] = useState(false);
+  // const [cardIsOpen, setCardIsOpen] = useState({
+  //   id: 0,
+  //   name: '',
+  //   author: '',
+  //   link: '',
+  // })
 
-  const [isOpened, setIsOpened] = useState(false)
+  useEffect(()=> {
+    getUserData(`${localStorage.getItem('folder')}`);
+  }, [])
+
+  const getUserData = async (folder) => {
+    let jwt = localStorage.getItem('jwt');
+    // console.log(jwt);
+    try {
+      const response = await fetch(`${host}/api/users/me?populate[libraries][populate]=*&populate[libraries][filters][folder][$eq]=${folder}`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`
+        },
+      });
+      const json = await response.json();
+      console.log(json);
+      setInfo(json);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
 
   return (
     <View style={styles.web}>
-      <Button onPress={test}>SUKA</Button>
-      <Opened isOpened={isOpened} setOpened={setIsOpened}/>
+      {/* <Opened 
+        isOpened={isOpened} 
+        setOpened={setIsOpened}
+        openId={cardIsOpen.id}
+        openName={cardIsOpen.name}
+        openAuthor={cardIsOpen.author}
+        openLink={cardIsOpen.link}
+      /> */}
       <LeftDoor visible={door.left} />
-      <RightDoor visible={door.right} doorVisible={setDoor} />
+      <RightDoor 
+        visible={door.right} 
+        doorVisible={setDoor} 
+        userName={info.username} 
+        updateFolder={getUserData}
+      />
       <View style={[openCard.background, !isOpened && {display: 'none'}]}></View>
 
       <TouchableWithoutFeedback
@@ -75,7 +99,10 @@ export default function Componet() {
               </View>
             </View>
             <View>
-              <Text style={headerStyles.foldername}>Folder name</Text>
+              <Text style={headerStyles.foldername}>
+                {/* {JSON.stringify(info && info.libraries && info.libraries[0].folder)} */}
+                {localStorage.getItem('folder')}
+              </Text>
             </View>
             <TouchableOpacity
               onPress={() => {setDoor((door) => ({...door, right: true}))}}
@@ -97,13 +124,24 @@ export default function Componet() {
         </View>
         
         {/* КАРТОЧКИ */}
-        <View style={styles.content}>
-          <Card setOpened={setIsOpened} />
-          <Card setOpened={setIsOpened} />
-          <Card setOpened={setIsOpened} />
-          <Card setOpened={setIsOpened} />
-          <Card setOpened={setIsOpened} />
-          <Card setOpened={setIsOpened} />
+        <View 
+          style={styles.content}
+        >
+          {/* <Text>{JSON.stringify(info, null, 2)}</Text> */}
+          {info && info.libraries && info.libraries.map((item) => (
+            <Card 
+              setOpened={setIsOpened}
+              // cardOpen={setCardIsOpen}
+              cardName={item.title} 
+              cardImage={item.videos[0].url}
+              userName={info.username}
+              cardId={item.id}
+              updatePage={getUserData}
+            />
+          ))}
+          {/* <Text>
+            {info && info.libraries && JSON.stringify(info.libraries[0].videos[0], null, 2)}
+          </Text> */}
         </View>
 
       </View>
@@ -130,7 +168,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between'
+    // justifyContent: 'space-between'
+    gap: 46,
   },
 });
 

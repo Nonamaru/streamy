@@ -1,7 +1,9 @@
-import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, Button, Image, StyleSheet, Dimensions } from 'react-native';
 import { Icon } from '@iconify/react';
 import { TouchableOpacity } from 'react-native-web';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { ResizeMode } from 'expo-av'
+import VideoPlayer from 'expo-video-player'
 
 const {height} = Dimensions.get('window');
 
@@ -9,11 +11,11 @@ const getStyle = (isActive) => {
     return isActive ? {color: 'gray'} : {color: 'black'}
 }
 
-export default function Opened({isOpened, setOpened}) {
+export default function Opened({isOpened, setOpened, openId, openName, openAuthor, openLink}) {
     const [hovered, setHovered] = useState({
         edit: false,
         trash: false,
-    })
+    });
     return (
         <View style={[cardStyle.opened, !isOpened && {display: 'none'}]}>
             <View style={cardStyle.viewStyle}>
@@ -26,7 +28,7 @@ export default function Opened({isOpened, setOpened}) {
                                 <Icon style={{width: 48, height: 48}} icon="solar:close-square-bold" />
                             </View>
                         </TouchableOpacity>
-                        <Text style={cardStyle.leftHeader.videoName}>videoname</Text>
+                        <Text style={cardStyle.leftHeader.videoName}>{openName}, {openId}</Text>
                     </View>
                     <View style={cardStyle.rightHeader}>
                         <View 
@@ -47,13 +49,32 @@ export default function Opened({isOpened, setOpened}) {
                     </View>
                 </View>
 
-                <View style={cardStyle.videoView}></View>
+                <View style={cardStyle.videoView}>
+                    {/* <Image
+                        style={cardStyle.videoView.img}
+                        source={{uri:`${openLink}`}}
+                    /> */}
+                    <VideoPlayer
+                        style={cardStyle.videoView.img}
+                        videoProps={{
+                            shouldPlay: true,
+                            resizeMode: ResizeMode.CONTAIN,
+                            fullscreen: {enterFullscreen: true},
+                            // ❗ source is required https://docs.expo.io/versions/latest/sdk/video/#props
+                            source: {
+                                uri: `${openLink}`,
+                            },
+                        }}
+                    />
+                </View>
 
                 <View style={cardStyle.videoOwner}>
-                    <View style={cardStyle.videoOwner.text}>Создал: </View>
+                    <View style={cardStyle.videoOwner.text}>
+                        <Text>Создал: </Text>
+                    </View>
                     <View style={cardStyle.videoOwner.profile}>
                         <View style={cardStyle.videoOwner.userPic}></View>
-                        <View style={cardStyle.videoOwner.name}>username</View>
+                        <View style={cardStyle.videoOwner.name}>{openAuthor}</View>
 
                     </View>
                 </View>
@@ -132,6 +153,12 @@ const cardStyle = StyleSheet.create({
         marginLeft: 'auto',
         marginRight: 'auto',
         backgroundColor: '#9C6C57',
+        img:{
+            resizeMode: 'cover',
+            objectFit: 'contain',
+            width: '100%',
+            height: '100%',
+        }
     },
     videoOwner:{
         display: 'flex',

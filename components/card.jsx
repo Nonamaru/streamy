@@ -1,7 +1,8 @@
 import { TextInput, Image, StyleSheet, TouchableWithoutFeedback, Text, View } from 'react-native';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { TouchableOpacity } from 'react-native-web';
+import { Video, ResizeMode } from 'expo-av'
 
 const getStyle = (isActive) => {
     return isActive ? { color: 'gray', cursor: 'pointer' } : { color: 'black' };
@@ -9,17 +10,21 @@ const getStyle = (isActive) => {
 const getStyleDelete = (isActive) => {
     return isActive ? { color: 'darkred', cursor: 'pointer' } : { color: 'red' };
 };
-const getStyleImg = (isActive) => {
-    return isActive ? { filter: 'blur(30px)' } : { filter: 'blur(25px)' }
-}
+// const getStyleImg = (isActive) => {
+//     return isActive ? { filter: 'blur(30px)' } : { filter: 'blur(25px)' }
+// }
+const host = "http://localhost:1337";
 
 
-export default function Card({setOpened}) {
+export default function Card({
+    // setOpened, cardOpen, 
+    cardName, cardImage, userName, cardId, updatePage
+}) {
     const [hovered, setHovered] = useState(false);
-    const [imgHovered, setImgHovered] = useState({
-        hover: false,
-        card: false,
-    });
+    // const [imgHovered, setImgHovered] = useState({
+    //     hover: false,
+    //     card: false,
+    // });
     const [hset, setHset] = useState({
         edit: false,
         trash: false,
@@ -32,7 +37,9 @@ export default function Card({setOpened}) {
         edit: false,
         delete: false,
     });
-    
+    const [newCardName, setNewCardName] = useState('');
+    const [onVideoHover, setOnVideoHover] = useState(false);
+
     const showSettings = (field, action) => {
         if (action){
             if (field == 'opened'){
@@ -72,29 +79,55 @@ export default function Card({setOpened}) {
     }
     return (
         <View style={styles.mainCard}>
-            <View style={styles.topCard}>
-                <TouchableOpacity
-                    onPress={() => {setOpened(true)}}
-                >
+            <View style={styles.topCard}
+                onMouseEnter={() => {setOnVideoHover(true)}}
+                onMouseLeave={() => {setOnVideoHover(false)}}
+            >
+                {/* <TouchableOpacity
+                    onPress={() => {
+                        setOpened(true);
+                        cardOpen((cardIsOpen) => ({
+                            ...cardIsOpen,
+                            id: cardId,
+                            name: `${cardName}`,
+                            author: `${userName}`,
+                            link: `http://localhost:1337${cardImage}`,
+                        }))
+                    }}
+                > */}
                     <View style={styles.cardView}>
-                        <View style={[styles.imageShadow, getStyleImg(imgHovered.hover)]}></View>
-                            <Image 
-                                style={styles.img} 
-                                onMouseEnter = {() => setImgHovered((imgHovered) => ({...imgHovered, hover: true}))}
-                                onMouseLeave = {() => setImgHovered((imgHovered) => ({...imgHovered, hover: false}))}
-                                source={{
-                                    uri: 'https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg',
-                                }}
-                            />
+                        {/* <View 
+                            style={
+                                [
+                                    styles.imageShadow, 
+                                    // {backgroundImage: `url('http://localhost:1337${cardImage}')`}, 
+                                    // getStyleImg(imgHovered.hover)
+                                ]}
+                        ></View> */}
+                        <Video
+                            style={styles.img}
+                            source={{
+                                uri: `${host}${cardImage}`,
+                            }}
+                            useNativeControls={onVideoHover}
+                            resizeMode={ResizeMode.CONTAIN}
+                            onReadyForDisplay={videoData => {
+                                videoData.srcElement.style.position = "relative"
+                            }}
+                            videoStyle={styles.img.video}
+                            isLooping={false}
+                            isMuted={true}
+                        />
                     </View>
-                </TouchableOpacity>
+                {/* </TouchableOpacity> */}
             </View>
+            
             <View style={styles.bottomCard}>
                 <View style={styles.userInfo}>
                     <View style={styles.userProfile}></View>
-                    <Text style={styles.cardText}>username</Text>
+                    <Text style={styles.cardText}>{userName}</Text>
                 </View>
-                <View style={styles.cardText}><Text>card name</Text></View>
+                <View style={styles.cardText}><Text>{cardName}</Text></View>
                 
                 {/* ИКОНКА ТРОЕТОЧИЯ */}
                 <View 
@@ -120,9 +153,7 @@ export default function Card({setOpened}) {
                         onMouseLeave={() => setHset((hset) => ({...hset, edit: false}))}
                     >
                         <TouchableWithoutFeedback
-                            onPress={() => {
-                                showSettings('edit', true)
-                            }}
+                            onPress={() => {showSettings('edit', true)}}
                         >
                             <Icon style={{width: '24px', height: '24px'}} icon="iconamoon:edit-bold" />
                         </TouchableWithoutFeedback>
@@ -148,7 +179,8 @@ export default function Card({setOpened}) {
                 <View style={[setting.main, setting.edit, !settings.edit && {display:'none'}]}>
                     <TextInput
                         style={setting.input}
-                        // onChangeText={onChangeNumber}
+                        placeholderTextColor={'gray'}
+                        onChangeText={(newname) => setNewCardName(newname)}
                         // value={number}
                         placeholder="card name"
                         // keyboardType="numeric"
@@ -158,7 +190,23 @@ export default function Card({setOpened}) {
                         onMouseEnter={() => setHset((hset) => ({...hset, send: true}))}
                         onMouseLeave={() => setHset((hset) => ({...hset, send: false}))}
                     >
-                        <TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback
+                            onPress={() => {fetch(`http://localhost:1337/api/libraries/${cardId}`, {
+                                method: 'PUT',
+                                headers: { 
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                                },
+                                body: JSON.stringify({
+                                    "data": {"title": `${newCardName}`}
+                                })
+                            }).then(() => {
+                                updatePage();
+                                showSettings('opened', false);
+                                showSettings('edit', false);
+                            })
+                            }}
+                        >
                             <Icon style={{width: '20px', height: '20px'}} icon="ic:round-send" />
                         </TouchableWithoutFeedback>
                     </View>
@@ -170,7 +218,7 @@ export default function Card({setOpened}) {
                     >
                         <TouchableWithoutFeedback
                             onPress={() => {
-                                showSettings('edit', false)
+                                showSettings('edit', false);
                             }}
                         >
                             <Icon style={{width: '24px', height: '24px'}} icon="ic:round-close" />
@@ -185,7 +233,21 @@ export default function Card({setOpened}) {
                         onMouseEnter={() => setHset((hset) => ({...hset, secondTrash: true}))}
                         onMouseLeave={() => setHset((hset) => ({...hset, secondTrash: false}))}
                     >
-                        <TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                fetch(`http://localhost:1337/api/libraries/${cardId}`, {
+                                    method:'DELETE',
+                                    headers: {
+                                        Authorization: `Bearer ${localStorage.getItem('jwt')}`
+                                    },
+                                })
+                                .then(() => {
+                                    updatePage();
+                                    showSettings('delete', false);
+                                    showSettings('opened', false);
+                                })
+                            }}
+                        >
                             <Icon 
                                 icon="octicon:trash-16" 
                                 style={{width: '24px', height: '24px'}} 
@@ -212,6 +274,9 @@ export default function Card({setOpened}) {
         </View>
     );
 }
+
+
+
 const styles = StyleSheet.create({
     mainCard: {
         width: '369px',
@@ -229,32 +294,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardView: {
-        width: '273px',
-        height: '318px',
+        // width: '273px',
+        // height: '318px',
+        width: '335px',
+        height: '380px',
         borderRadius: '6px',
         backgroundColor: '#F9F5D4',
         position: 'relative',
         textAlign: 'center',
     },
-    imageShadow: {
-        position: 'absolute',
-        top: '15%',
-        left: '5%',
-        right: '5%',
-        height: '90%',
-        backgroundSize: 'auto',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        borderRadius: 'inherit',
-        filter: 'blur(25px)',
-        backgroundImage: "url('https://free4kwallpapers.com/uploads/originals/2020/04/05/anonymous-wallpaper.jpg')",
-    },
+    // imageShadow: {
+    //     position: 'absolute',
+    //     top: '15%',
+    //     left: '5%',
+    //     right: '5%',
+    //     height: '90%',
+    //     backgroundSize: 'auto',
+    //     backgroundPosition: 'center',
+    //     backgroundRepeat: 'no-repeat',
+    //     borderRadius: 'inherit',
+    //     filter: 'blur(25px)',
+    // },
     img: {
-        position: 'relative',
-        width: 'auto',
         width: '100%',
         height: '100%',
-        cursor: 'pointer'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        video:{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain'
+        }
     },
 
     bottomCard: {
@@ -325,7 +396,7 @@ const setting = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: '6px',
         padding: '5px',
-        color: 'gray'
+        color: 'black'
     },
     delete: {
         width: '60px',
