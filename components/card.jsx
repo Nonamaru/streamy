@@ -21,6 +21,7 @@ export default function Card({
     cardName, cardImage, userName, cardId, updatePage
 }) {
     const [hovered, setHovered] = useState(false);
+    const [fullNameHover, setFullNameHover] = useState(false);
     // const [imgHovered, setImgHovered] = useState({
     //     hover: false,
     //     card: false,
@@ -127,7 +128,25 @@ export default function Card({
                     <View style={styles.userProfile}></View>
                     <Text style={styles.cardText}>{userName}</Text>
                 </View>
-                <View style={styles.cardText}><Text>{cardName}</Text></View>
+                <View 
+                    style={[styles.cardText, styles.styleNameCard]}
+                    onMouseEnter={() => {setFullNameHover(true)}}
+                >
+                    <Text 
+                        style={styles.styleNameCard.nameCard}
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                    >
+                        {cardName}
+                    </Text>
+                    <View 
+                        style={[styles.fullName, !fullNameHover && {display: 'none'}]}
+
+                        onMouseLeave={() => {setFullNameHover(false)}}
+                    >
+                        <Text>{cardName}</Text>
+                    </View>
+                </View>
                 
                 {/* ИКОНКА ТРОЕТОЧИЯ */}
                 <View 
@@ -182,7 +201,7 @@ export default function Card({
                         placeholderTextColor={'gray'}
                         onChangeText={(newname) => setNewCardName(newname)}
                         // value={number}
-                        placeholder="card name"
+                        placeholder={cardName}
                         // keyboardType="numeric"
                     />
                     <View
@@ -354,6 +373,29 @@ const styles = StyleSheet.create({
         fontSize: '12px',
         fontStyle: 'normal',
         fontWeight: '400',
+    },
+    styleNameCard:{
+        width: 200,
+        // height: 30,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        nameCard: {
+            // whiteSpace: 'nowrap',
+            // overflow: 'hide',
+            // textOverflow: 'ellipsis',
+        }
+    },
+    fullName:{
+        position: 'absolute',
+        top: -1,
+        left: -1,
+        width: '100%',
+        padding: 6,
+        borderRadius: 6,
+        backgroundColor: 'lightgray',
+        textAlign: 'center'
     },
     menu: {
         width: '30px',
