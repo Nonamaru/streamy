@@ -1,6 +1,7 @@
 import { Button, Dimensions, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, useWindowDimensions } from 'react-native';
 import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
+import Live from '../components/Live.jsx';
 import Card from '../components/card.jsx';
 import RightDoor from '../components/rightDoor.jsx';
 import LeftDoor from '../components/leftDoor.jsx';
@@ -123,6 +124,11 @@ export default function Componet() {
           </View>
         </View>
         
+        {/* ПРЯМОЙ ЭФИР */}
+        <View style={styles.live}>
+          <Live />
+          <Live />
+        </View>
         {/* КАРТОЧКИ */}
         <View 
           style={styles.content}
@@ -171,6 +177,15 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-between'
     gap: 46,
   },
+  live: {
+    width: 1200,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+  }
 });
 
 const headerStyles = StyleSheet.create({
